@@ -1,6 +1,7 @@
 import gulp from "gulp";
 import gpug from "gulp-pug"; //https://www.npmjs.com/package/gulp-pug
 import del from "del";
+import ws from "gulp-webserver";
 
 const routes = {
   pug: {
@@ -14,8 +15,14 @@ const pug = () =>
 
 const clean = () => del([routes.pug.dest]);
 
+const webserver = () =>
+  gulp.src(routes.pug.dest).pipe(ws({ livereload: true, open: true }));
+
 const prepare = gulp.series([clean]);
 
 const assets = gulp.series([pug]);
 
-export const dev = gulp.series([prepare, assets]); // export는 pakage.json에서 호출되는 것만 쓰면 됨
+const postDev = gulp.series([webserver]);
+
+// export는 pakage.json에서 호출되는 것만 쓰면 됨
+export const dev = gulp.series([prepare, assets, postDev]);
