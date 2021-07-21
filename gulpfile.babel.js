@@ -3,6 +3,8 @@ import gpug from "gulp-pug"; //https://www.npmjs.com/package/gulp-pug
 import del from "del";
 import ws from "gulp-webserver";
 import imgage from "gulp-image";
+import autop from "gulp-autoprefixer";
+import miniCss from "gulp-csso";
 
 const sass = require("gulp-sass")(require("node-sass"));
 
@@ -49,6 +51,8 @@ const styles = () =>
   gulp
     .src(routes.scss.src)
     .pipe(sass().on("error", sass.logError))
+    .pipe(autop({})) //https://www.npmjs.com/package/gulp-autoprefixer usage 참조
+    .pipe(miniCss())
     .pipe(gulp.dest(routes.scss.dest));
 
 const prepare = gulp.series([clean]);
