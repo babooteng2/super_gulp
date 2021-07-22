@@ -8,6 +8,7 @@ import miniCss from "gulp-csso";
 import bro from "gulp-bro"; //browserify - 웹상에서 노드스타일 모듈작성할 수 있는 자바스크립도구
 import babelify from "babelify";
 import uglify from "uglifyify";
+import ghPages from "gulp-gh-pages";
 
 const sass = require("gulp-sass")(require("node-sass"));
 
@@ -36,7 +37,7 @@ const routes = {
 const pug = () =>
   gulp.src(routes.pug.src).pipe(gpug()).pipe(gulp.dest(routes.pug.dest));
 
-const clean = () => del([routes.pug.dest]);
+const clean = () => del([routes.pug.dest, ".publish"]);
 
 const webserver = () =>
   gulp.src(routes.pug.dest).pipe(
@@ -77,12 +78,16 @@ const js = () =>
     )
     .pipe(gulp.dest(routes.js.dest));
 
+const gh = () => gulp.src("build/**/*").pipe(ghPages());
+
 const prepare = gulp.series([clean]);
 
 const assets = gulp.series([pug, styles, img, js]);
 
-//const postDev = gulp.series([webserver, watch]);
-const postDev = gulp.parallel([webserver, watch]);
+const live = gulp.parallel([webserver, watch]);
 
 // export는 pakage.json에서 호출되는 것만 쓰면 됨
-export const dev = gulp.series([prepare, assets, postDev]);
+export const build = gulp.series([prepare, assets]);
+export const dev = gulp.series([build, live]);
+//export const deploy = gulp.series([build, gh, clean]);
+export const deploy = gulp.series([build, gh, clean]);
